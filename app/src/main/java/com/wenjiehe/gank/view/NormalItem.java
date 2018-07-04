@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.wenjiehe.gank.model.GankItem;
-
+import com.wenjiehe.gank.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

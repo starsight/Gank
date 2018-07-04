@@ -12,11 +12,16 @@ import android.widget.TextView;
 
 import com.wenjiehe.gank.R;
 import com.wenjiehe.gank.model.GankItem;
+import com.wenjiehe.gank.view.GankItemView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
 
 public class GankAdapter extends RecyclerView.Adapter implements GankItemView.Listener {
 
@@ -131,7 +136,9 @@ public class GankAdapter extends RecyclerView.Adapter implements GankItemView.Li
 
     @Override
     public void open(GankItem gankItem) {
-        GankViewActivity.startActivity(mContext, gankItem);
+
+        // TODO
+        //GankViewActivity.startActivity(mContext, gankItem);
     }
 
     @Override
@@ -151,7 +158,7 @@ public class GankAdapter extends RecyclerView.Adapter implements GankItemView.Li
             mListener.showInfo("取消喜欢");
         }
 
-        DataManager.getInstance(mContext).updateLike(gankItem);
+        //DataManager.getInstance(mContext).updateLike(gankItem);
     }
 
     class LoadingVh extends RecyclerView.ViewHolder {
@@ -295,6 +302,7 @@ public class GankAdapter extends RecyclerView.Adapter implements GankItemView.Li
             return normalPage;
         }
 
+        @Override
         int getSize() {
             return items == null ? 0 : items.length;
         }

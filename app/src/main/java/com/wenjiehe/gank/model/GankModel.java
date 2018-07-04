@@ -49,6 +49,8 @@ public class GankModel implements IModel {
 
     private SQLiteDatabase sqLiteDatabase;
     private Api api;
+    //private LoadGankItemCallBack loadGankItemCallBack;
+    // TODO loadCategoryCallBack
 
     public Observable<List<String>> loadCategory() {
 

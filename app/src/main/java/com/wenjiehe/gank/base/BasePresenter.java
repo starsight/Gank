@@ -13,7 +13,7 @@ public abstract class BasePresenter<V extends IView,M extends IModel> implements
 
     public M getiModel() {
         //使用前先进行初始化
-        iModel = loadModel();
+        iModel = initModel();
         return iModel;
     }
 
@@ -35,5 +35,5 @@ public abstract class BasePresenter<V extends IView,M extends IModel> implements
         return (V) actReference.get();
     }
 
-    public abstract M loadModel();
+    public abstract M initModel();
 }

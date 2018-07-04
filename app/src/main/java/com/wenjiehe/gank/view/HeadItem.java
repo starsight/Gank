@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.wenjiehe.gank.model.GankItem;
-
+import com.wenjiehe.gank.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
