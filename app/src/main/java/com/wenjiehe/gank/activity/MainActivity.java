@@ -14,7 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wenjiehe.gank.R;
+import com.wenjiehe.gank.contract.AboutContract;
+import com.wenjiehe.gank.fragment.AboutFragment;
 import com.wenjiehe.gank.fragment.GankFragment;
+import com.wenjiehe.gank.presenter.AboutPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar loading;
     @BindView(R.id.text)
     TextView text;
+
+    private AboutPresenter aboutPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             if (position == 1) {
                 //return CategoryFragment.newInstance();
             } else if (position == 2) {
-                //return AboutFragment.newInstance();
+                return AboutFragment.newInstance();
             }
             return GankFragment.newInstance(null);
         }

@@ -16,8 +16,9 @@ import com.google.gson.Gson;
 import com.wenjiehe.gank.R;
 import com.wenjiehe.gank.adapter.GankAdapter;
 import com.wenjiehe.gank.base.BaseActivity;
-import com.wenjiehe.gank.base.BaseFragment;
+import com.wenjiehe.gank.contract.GankContract;
 import com.wenjiehe.gank.model.GankItem;
+import com.wenjiehe.gank.model.LoadGankItemCallBack;
 import com.wenjiehe.gank.presenter.GankPresenter;
 import com.wenjiehe.gank.view.flipview.FlipLayoutManager;
 import com.wenjiehe.gank.view.flipview.FlipRefreshListener;
@@ -25,17 +26,12 @@ import com.wenjiehe.gank.view.flipview.MySnap;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
-public class GankFragment extends BaseFragment<GankPresenter> implements FlipRefreshListener.Listener, GankAdapter.Listener {
+public class GankFragment extends GankContract.View implements FlipRefreshListener.Listener, GankAdapter.Listener {
     private static final String TAG = "GankFragment";
 
     private static final String ARG_TYPE = "type";
@@ -46,7 +42,7 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
     private String mLastLoad;
     private String mLatest;
     //private DataManager mDataManager;
-    private Subscription mSubscription;
+    //private Subscription mSubscription;
     private BaseActivity baseActivity;
     private boolean mIsLoading;
     private FlipRefreshListener mFlipListener;
@@ -59,7 +55,8 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
     @BindView(R.id.refresh_icon)
     ImageView refreshIcon;
 
-    public GankFragment() { }
+    public GankFragment() {
+    }
 
     public static GankFragment newInstance(String type) {
         GankFragment fragment = new GankFragment();
@@ -110,8 +107,7 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
         if (mAdapter.getDataCount() == 0) {
             if (mType == null) {
                 loadNew();
-            }
-            else {
+            } else {
                 loadMore();
             }
         } else {
@@ -125,6 +121,7 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
         public void onChildViewAttachedToWindow(View view) {
             Log.d(TAG, "onChildViewAttachedToWindow: ");
         }
+
         // 可以释放资源的监听，也就是回收Item的时候
         @Override
         public void onChildViewDetachedFromWindow(View view) {
@@ -137,9 +134,10 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+//        if (mSubscription != null) {
+//            mSubscription.unsubscribe();
+//        }
+        ((GankPresenter)mPresenter).unsbscribe();
 
         mIsLoading = false;
     }
@@ -159,58 +157,28 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
     }
 
     private void loadMore() {
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+//        if (mSubscription != null) {
+//            mSubscription.unsubscribe();
+//        }
 
         mIsLoading = true;
 
-
-        mSubscription = //mDataManager.loadMore(mLastLoad)
-                mPresenter.loadMore(mLastLoad)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onMore, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        // do nothing
-                    }
-                });
+        mPresenter.loadMore(mLastLoad,loadMoreGankItemCallBack);
     }
 
     private void loadNew() {
         Log.d(TAG, "loadNew: ");
 
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+//        if (mSubscription != null) {
+//            mSubscription.unsubscribe();
+//        }
         mIsLoading = true;
-        //延时一下，效果看起来更明显
-        mSubscription = //mDataManager.loadNew()
-                mPresenter.loadNew()
-                .delay(1500, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(onNew, onError);
+        mPresenter.loadNew(loadNewGankItemCallBack);
     }
 
-    private Action1<Throwable> onError = new Action1<Throwable>() {
+    private LoadGankItemCallBack loadNewGankItemCallBack  = new LoadGankItemCallBack() {
         @Override
-        public void call(Throwable throwable) {
-            mIsLoading = false;
-
-            Log.e(TAG, "onError", throwable);
-            if (baseActivity != null) {
-                baseActivity.showInfo("加载失败");
-            } else {
-                Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
-    private Action1<List<GankItem>> onNew = new Action1<List<GankItem>>() {
-        @Override
-        public void call(List<GankItem> gankItemList) {
+        public void loadOnNext(List<GankItem> gankItemList) {
             mIsLoading = false;
 
             if (gankItemList.size() > 0) {
@@ -240,11 +208,28 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
             }
             mFlipListener.onScrolled(recyclerView, 0, 0);
         }
+
+        @Override
+        public void loadOnError(Throwable throwable) {
+            mIsLoading = false;
+
+            Log.e(TAG, "onError", throwable);
+            if (baseActivity != null) {
+                baseActivity.showInfo("加载失败");
+            } else {
+                Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void loadOnCompleted() {
+
+        }
     };
 
-    private Action1<List<GankItem>> onMore = new Action1<List<GankItem>>() {
+    private LoadGankItemCallBack loadMoreGankItemCallBack  = new LoadGankItemCallBack() {
         @Override
-        public void call(List<GankItem> gankItemList) {
+        public void loadOnNext(List<GankItem> gankItemList) {
             mIsLoading = false;
 
             if (gankItemList.size() > 0) {
@@ -281,6 +266,16 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
             mAdapter.setHasMore(mHasMore);
             mFlipListener.onScrolled(recyclerView, 0, 0);
         }
+
+        @Override
+        public void loadOnError(Throwable throwable) {
+
+        }
+
+        @Override
+        public void loadOnCompleted() {
+
+        }
     };
 
     @Override
@@ -303,7 +298,7 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
             View view = getView();
             int from = 0x00;
             int to = 0x30;
-            int now = (from + (int)((to - from) * percent));
+            int now = (from + (int) ((to - from) * percent));
             int color = 0xFF << 24 | now << 16 | now << 8 | now;
             view.setBackgroundColor(color);
             refreshIcon.setRotation(percent * 360);
@@ -322,11 +317,6 @@ public class GankFragment extends BaseFragment<GankPresenter> implements FlipRef
         if (baseActivity != null) {
             baseActivity.showInfo(info);
         }
-    }
-
-    @Override
-    public void setLoading(boolean isLoading) {
-
     }
 
     @Override

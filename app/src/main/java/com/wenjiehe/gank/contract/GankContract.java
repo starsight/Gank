@@ -1,20 +1,18 @@
 package com.wenjiehe.gank.contract;
 
 import com.wenjiehe.gank.base.BaseFragment;
-import com.wenjiehe.gank.model.GankItem;
-
-import java.util.List;
-
-import rx.Observable;
-import rx.Subscription;
+import com.wenjiehe.gank.base.BasePresenter;
+import com.wenjiehe.gank.fragment.GankFragment;
+import com.wenjiehe.gank.model.GankModel;
+import com.wenjiehe.gank.model.LoadGankItemCallBack;
 
 public interface GankContract {
-    interface Prestener{
-        Observable<List<GankItem>> loadNew();
-        Observable<List<GankItem>> loadMore(String date);
+    abstract class Prestener extends BasePresenter<GankFragment,GankModel>{
+        public abstract void loadNew(LoadGankItemCallBack loadGankItemCallBack);
+        public abstract void loadMore(String date,LoadGankItemCallBack loadGankItemCallBack);
     }
 
-    interface Fragment{
+    abstract class View extends BaseFragment<Prestener> {
 
     }
 }
