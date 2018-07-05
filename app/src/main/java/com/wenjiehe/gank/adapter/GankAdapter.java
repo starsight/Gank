@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wenjiehe.gank.R;
+import com.wenjiehe.gank.activity.GankViewActivity;
 import com.wenjiehe.gank.model.GankItem;
 import com.wenjiehe.gank.view.GankItemView;
 
@@ -136,9 +137,7 @@ public class GankAdapter extends RecyclerView.Adapter implements GankItemView.Li
 
     @Override
     public void open(GankItem gankItem) {
-
-        // TODO
-        //GankViewActivity.startActivity(mContext, gankItem);
+        GankViewActivity.startActivity(mContext, gankItem);
     }
 
     @Override

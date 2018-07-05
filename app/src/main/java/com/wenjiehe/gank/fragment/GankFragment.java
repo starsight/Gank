@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.wenjiehe.gank.R;
 import com.wenjiehe.gank.adapter.GankAdapter;
-import com.wenjiehe.gank.base.BaseActivity;
+import com.wenjiehe.gank.activity.BaseActivity;
 import com.wenjiehe.gank.contract.GankContract;
 import com.wenjiehe.gank.model.GankItem;
 import com.wenjiehe.gank.model.LoadGankItemCallBack;

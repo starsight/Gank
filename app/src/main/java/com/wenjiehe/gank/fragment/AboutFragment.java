@@ -28,7 +28,7 @@ public class AboutFragment extends  AboutContract.View{
     private AboutContract.Presenter mPresenter;
 
     public AboutFragment() {
-        mPresenter = new AboutPresenter(this);
+
     }
 
     public static AboutFragment newInstance() {
@@ -38,6 +38,7 @@ public class AboutFragment extends  AboutContract.View{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPresenter = new AboutPresenter(this);
     }
 
     @Override

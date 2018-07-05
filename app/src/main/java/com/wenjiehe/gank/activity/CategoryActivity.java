@@ -1,11 +1,9 @@
 package com.wenjiehe.gank.activity;
 
 import android.animation.Animator;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,17 +11,26 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.wenjiehe.gank.R;
-import com.wenjiehe.gank.fragment.AboutFragment;
-import com.wenjiehe.gank.fragment.CategoryFragment;
 import com.wenjiehe.gank.fragment.GankFragment;
-import com.wenjiehe.gank.presenter.AboutPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity {
-    private static final String TAG = "MainActivity";
 
+public class CategoryActivity extends BaseActivity {
+    private static final String TAG = "CategoryActivity";
+
+    private static final String ARG_TYPE = "type";
+
+    public static void startActivity(Context context, String type) {
+        Intent intent = new Intent(context, CategoryActivity.class);
+        intent.putExtra(ARG_TYPE, type);
+        context.startActivity(intent);
+    }
+
+    @BindView(R.id.title)
+    TextView title;
     @BindView(R.id.scrim)
     View scrim;
     @BindView(R.id.loading)
@@ -34,39 +41,23 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_category);
+
         ButterKnife.bind(this);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(mPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_main);
-        tabLayout.getTabAt(1).setIcon(R.drawable.icon_category);
-        tabLayout.getTabAt(2).setIcon(R.drawable.icon_about);
-    }
-
-    private PagerAdapter mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 1) {
-                return CategoryFragment.newInstance();
-            } else if (position == 2) {
-                return AboutFragment.newInstance();
+        if (savedInstanceState == null) {
+            if (getIntent() == null) {
+                throw new IllegalStateException();
             }
-            return GankFragment.newInstance(null);
-        }
 
-        @Override
-        public int getCount() {
-            return 3;
-        }
+            String type = getIntent().getExtras().getString(ARG_TYPE);
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return null;
+            title.setText(type);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, GankFragment.newInstance(type))
+                    .commit();
         }
-    };
+    }
 
     @Override
     public void setLoading(boolean isLoading) {
@@ -107,7 +98,8 @@ public class MainActivity extends BaseActivity {
         scrim.setVisibility(View.VISIBLE);
         loading.setVisibility(View.GONE);
         text.setText(info);
-        scrim.setAlpha(1f);
+        scrim.setAlpha(0f);
+        scrim.animate().alpha(1f).setDuration(230).start();
         scrim.postDelayed(hideInfo, 800);
     }
 
@@ -129,4 +121,11 @@ public class MainActivity extends BaseActivity {
             }).start();
         }
     };
+
+
+    @OnClick(R.id.back)
+    void back() {
+        finish();
+    }
 }
+
