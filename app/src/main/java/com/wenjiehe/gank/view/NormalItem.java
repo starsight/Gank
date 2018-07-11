@@ -63,6 +63,7 @@ public class NormalItem extends FrameLayout implements GankItemView {
 
                     Glide.with(getContext())
                             .load(gankItem.getImage() + "?imageView2/1/w/" + width)
+                            .asBitmap()
                             .placeholder(R.drawable.drawable_placeholder)
                             .centerCrop()
                             .into(image);
