@@ -271,6 +271,14 @@ public class FlipLayoutManager extends RecyclerView.LayoutManager implements Rec
         public int calculateDxToMakeVisible(View view, int snapPreference) {
             return 0;
         }
+
+        @Override
+        protected int calculateTimeForScrolling(int dx) {
+            Log.d(TAG, "calculateTimeForScrolling: ");
+            int time = super.calculateTimeForScrolling(dx * 5);
+
+            return time;
+        }
     }
 
     private static class SavedState implements Parcelable {
@@ -331,5 +339,14 @@ public class FlipLayoutManager extends RecyclerView.LayoutManager implements Rec
         super.onScrollStateChanged(state);
         Log.d("hewenjie", "onScrollStateChanged: ");
     }
+
+    public boolean isOnTop(){
+        return mPosition ==0;
+    }
+
+    public int getmPosition(){
+        return mPosition;
+    }
+
 }
 

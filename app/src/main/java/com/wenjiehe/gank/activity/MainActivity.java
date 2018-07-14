@@ -1,6 +1,7 @@
 package com.wenjiehe.gank.activity;
 
 import android.animation.Animator;
+import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -8,9 +9,12 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wenjiehe.gank.R;
 import com.wenjiehe.gank.fragment.AboutFragment;
@@ -31,6 +35,8 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.text)
     TextView text;
 
+    private GankFragment gankFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,14 +45,52 @@ public class MainActivity extends BaseActivity {
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(mPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setIcon(R.drawable.icon_main);
+        //tabLayout.getTabAt(0).setIcon(R.drawable.icon_main);
         tabLayout.getTabAt(1).setIcon(R.drawable.icon_category);
         tabLayout.getTabAt(2).setIcon(R.drawable.icon_about);
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab != null) {
+            tabLayout.getTabAt(0).setCustomView(getTabView(0));
+            if (tab.getCustomView() != null) {
+                View tabView = (View) tab.getCustomView().getParent();
+                tabView.setTag(0);
+                tabView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int position = (int) v.getTag();
+                        if (position == 0 && tabLayout.getTabAt(position).isSelected()) {
+                            gankFragment.clickIcon();
+                            //Toast.makeText(MainActivity.this, "点击了第一个tab", Toast.LENGTH_SHORT).show();
+                        }
+//                        else if (position == 1 && tabLayout.getTabAt(position).isSelected() == true) {
+//                            Toast.makeText(MainActivity.this, "点击了第二个tab", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            TabLayout.Tab tab = tabLayout.getTabAt(position);
+//                            if (tab != null) {
+//                                tab.select();
+//                            }
+//                        }
+                    }
+                });
+
+            }
+
+        }
+
+    }
+
+    public View getTabView(int position){
+        ImageView view = new ImageView(MainActivity.this);
+        if (position == 0) {
+            view.setImageResource(R.drawable.icon_main);
+        }
+        return view;
     }
 
     private PagerAdapter mPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
+
         @Override
         public Fragment getItem(int position) {
             if (position == 1) {
@@ -54,7 +98,8 @@ public class MainActivity extends BaseActivity {
             } else if (position == 2) {
                 return AboutFragment.newInstance();
             }
-            return GankFragment.newInstance(null);
+            gankFragment = GankFragment.newInstance(null);
+            return gankFragment;
         }
 
         @Override

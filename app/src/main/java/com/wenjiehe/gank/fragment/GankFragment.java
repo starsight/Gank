@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.wenjiehe.gank.R;
+import com.wenjiehe.gank.activity.MainActivity;
 import com.wenjiehe.gank.adapter.GankAdapter;
 import com.wenjiehe.gank.activity.BaseActivity;
 import com.wenjiehe.gank.contract.GankContract;
@@ -47,6 +48,8 @@ public class GankFragment extends GankContract.View implements FlipRefreshListen
     private boolean mIsLoading;
     private FlipRefreshListener mFlipListener;
     private boolean mHasMore = true;
+
+    private FlipLayoutManager layoutManager;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -93,7 +96,7 @@ public class GankFragment extends GankContract.View implements FlipRefreshListen
         }
 
         recyclerView.setAdapter(mAdapter);
-        FlipLayoutManager layoutManager = new FlipLayoutManager(getContext());
+        layoutManager = new FlipLayoutManager(getContext());
 
         recyclerView.setItemAnimator(null);
         recyclerView.setLayoutManager(layoutManager);
@@ -322,6 +325,18 @@ public class GankFragment extends GankContract.View implements FlipRefreshListen
     @Override
     public void onClick(View v) {
 
+    }
+
+    public void clickIcon(){
+        if(layoutManager.isOnTop()){
+            ((MainActivity)getActivity()).setLoading(true);
+            loadNew();
+        }else{
+            if(layoutManager.getmPosition()>3){
+                recyclerView.scrollToPosition(3);
+            }
+            recyclerView.smoothScrollToPosition(0);
+        }
     }
 }
 
